@@ -1,0 +1,9 @@
+*.log
+hs_err_pid*
+replay_pid*
+*.dump
+*.dumpstream
+.env
+backend/target/
+frontend/dist/
+frontend/node_modules/

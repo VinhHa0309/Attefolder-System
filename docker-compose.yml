@@ -1,0 +1,50 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: attendance
+      POSTGRES_USER: attendance
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-03092005}
+    ports: ["5433:5432"]
+    volumes: ["attendance_db:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U attendance -d attendance"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  api:
+    build: ./backend
+    environment:
+      PORT: 8080
+      DATABASE_URL: jdbc:postgresql://postgres:5432/attendance
+      DATABASE_USER: attendance
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD:-03092005}
+      BOOTSTRAP_ADMIN_EMAIL: ${BOOTSTRAP_ADMIN_EMAIL:-root@local.test}
+      BOOTSTRAP_ADMIN_PASSWORD: ${BOOTSTRAP_ADMIN_PASSWORD:-ChangeMe123!}
+      SESSION_SECRET: ${SESSION_SECRET:-replace-this-local-secret-before-deploy-0123456789}
+      APP_DEMO_DATA: ${APP_DEMO_DATA:-true}
+      APP_EXPOSE_DEV_MAIL: ${APP_EXPOSE_DEV_MAIL:-true}
+      WEB_URL: ${WEB_URL:-http://localhost:5173}
+      TRUSTED_PROXIES: ${TRUSTED_PROXIES:-127.0.0.1/32,::1/128,172.28.0.10/32}
+      SMTP_HOST: ${SMTP_HOST:-localhost}
+      SMTP_PORT: ${SMTP_PORT:-1025}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+    ports: ["8080:8080"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+  web:
+    build: ./frontend
+    ports: ["5173:80"]
+    depends_on: [api]
+    networks:
+      default:
+        ipv4_address: 172.28.0.10
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
+volumes:
+  attendance_db:

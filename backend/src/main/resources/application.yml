@@ -1,0 +1,31 @@
+server:
+  port: ${PORT:8081}
+  forward-headers-strategy: none
+spring:
+  application.name: attendance-api
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/attendance}
+    username: ${DATABASE_USER:attendance}
+    password: ${DATABASE_PASSWORD:03092005}
+    hikari:
+      data-source-properties:
+        stringtype: unspecified
+  flyway:
+    enabled: true
+  jackson:
+    time-zone: UTC
+  mail:
+    host: ${SMTP_HOST:localhost}
+    port: ${SMTP_PORT:1025}
+    username: ${SMTP_USER:}
+    password: ${SMTP_PASSWORD:}
+app:
+  web-url: ${WEB_URL:http://localhost:5173}
+  bootstrap:
+    email: ${BOOTSTRAP_ADMIN_EMAIL:root@local.test}
+    password: ${BOOTSTRAP_ADMIN_PASSWORD:ChangeMe123!}
+  trusted-proxies: ${TRUSTED_PROXIES:127.0.0.1/32,::1/128}
+  code-interval-seconds: ${CODE_INTERVAL_SECONDS:15}
+  session-secret: ${SESSION_SECRET:local-development-secret-change-this-32chars}
+  demo-data: ${APP_DEMO_DATA:true}
+  expose-dev-mail: ${APP_EXPOSE_DEV_MAIL:true}
